@@ -1,12 +1,21 @@
 import { useState } from "react";
+
 import Todo from "../../models/todo";
 import TodoCategories from "../../enums/todoCategories";
+import TodoPriorityIds from "../../enums/TodoPriorityIds";
+import TODO_PRIORITIES from "../../constants/todoPriorities";
+import TodoPriority from "../../models/todoPriority";
 
 const PLACEHOLDER_CATEGORY_SELECT_TEXT = "Choose a category:";
+
+const DEFAULT_TODO_PRIORITY: TodoPriority = TODO_PRIORITIES.find(
+  (p) => p.id === TodoPriorityIds.Medium
+)!;
 
 const AddTodoForm = (): JSX.Element => {
   const [todo, setTodo] = useState<Todo>({
     text: "",
+    priority: DEFAULT_TODO_PRIORITY,
   });
 
   const onTodoTextChangeHandler = (
@@ -19,7 +28,7 @@ const AddTodoForm = (): JSX.Element => {
       };
     });
   };
-  
+
   const onSelectCategoryChangeHandler = (
     event: React.ChangeEvent<HTMLSelectElement>
   ): void => {
@@ -37,13 +46,56 @@ const AddTodoForm = (): JSX.Element => {
     });
   };
 
-  const categoryOptions = Object.values(TodoCategories)
-    .map((value, index) => {
-      return (
-        <option key={index}>{value || PLACEHOLDER_CATEGORY_SELECT_TEXT}</option>
-      );
-    })
-    .reverse();
+  const onSelectPriorityChangeHandler = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ): void => {
+    const selectedPriorityId = Number(event.target.value);
+
+    const selectedPriority = TODO_PRIORITIES.find(
+      (p) => p.id === selectedPriorityId
+    )!;
+
+    setTodo((currentTodo) => {
+      return {
+        ...currentTodo,
+        priority: selectedPriority,
+      };
+    });
+  };
+
+  const categoryOptions = (
+    <select
+      value={todo.category}
+      onChange={onSelectCategoryChangeHandler}
+      name="Category"
+    >
+      {Object.values(TodoCategories)
+        .map((value, index) => {
+          return (
+            <option key={index}>
+              {value || PLACEHOLDER_CATEGORY_SELECT_TEXT}
+            </option>
+          );
+        })
+        .reverse()}
+    </select>
+  );
+
+  const priorityOptions = (
+    <select
+      value={todo.priority.id}
+      onChange={onSelectPriorityChangeHandler}
+      name="Priority"
+    >
+      {TODO_PRIORITIES.map((todoPriority, index) => {
+        return (
+          <option value={todoPriority.id} key={index}>
+            {todoPriority.name}
+          </option>
+        );
+      })}
+    </select>
+  );
 
   return (
     <form onSubmit={(e) => console.log(e)}>
@@ -53,11 +105,12 @@ const AddTodoForm = (): JSX.Element => {
         placeholder="what's in your todo"
         value={todo.text}
       />
-      <select onChange={onSelectCategoryChangeHandler} name="Category">
-        {categoryOptions}
-      </select>
+
+      {categoryOptions}
+      {priorityOptions}
 
       <p>Text: {todo.text}</p>
+      <p>Priority: {todo.priority.name}</p>
       <p>Category you selected: {todo.category}</p>
       <button type="submit">+ Add</button>
     </form>

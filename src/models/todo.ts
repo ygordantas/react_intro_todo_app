@@ -1,10 +1,10 @@
 import TodoCategories from "../enums/todoCategories";
-import TodoPriorities from "../enums/todoPriorities";
+import TodoPriority from "./todoPriority";
 
 export default interface Todo {
   text: string;
+  priority: TodoPriority;
   category?: TodoCategories;
-  priority?: TodoPriorities;
   lastUpdatedAt?: Date;
   createdAt?: Date;
 }
