@@ -5,6 +5,8 @@ import TodoPriorityIds from "../../enums/TodoPriorityIds";
 import TODO_PRIORITIES from "../../constants/todoPriorities";
 import TodoPriority from "../../models/todoPriority";
 import TODO_CATEGORIES from "../../constants/todoCategories";
+import Button from "../Button/Button";
+import classes from "./AddTodoForm.module.css";
 
 const PLACEHOLDER_CATEGORY_SELECT_TEXT = "Choose a category:";
 
@@ -108,18 +110,21 @@ const AddTodoForm = ({ onSubmit }: AddTodoFormProps): JSX.Element => {
   );
 
   return (
-    <form onSubmit={onSubmitHandler}>
-      <input
-        onChange={onTodoTextChangeHandler}
-        type="text"
-        placeholder="what's in your todo"
-        value={todo.text}
-      />
+    <form className={classes.todo_form} onSubmit={onSubmitHandler}>
+      <div className={classes.input_container}>
+        <input
+          onChange={onTodoTextChangeHandler}
+          type="text"
+          placeholder="what's in your todo"
+          value={todo.text}
+        />
+      </div>
+      <div className={classes.options_container}>
+        {categoryOptions}
+        {priorityOptions}
+      </div>
 
-      {categoryOptions}
-      {priorityOptions}
-
-      <button type="submit">+ Add</button>
+      <Button className={classes.submit_btn} type="submit">+ Add</Button>
     </form>
   );
 };

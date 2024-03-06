@@ -1,0 +1,36 @@
+.todo_form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 50vw;
+  height: 100vh;
+  background-color: darkslategrey;
+}
+
+.input_container {
+  margin: 10px auto;
+  width: 80%;
+}
+
+.input_container input {
+  width: 100%;
+  border-radius: 20px;
+  border: 1px solid #c0c0c0;
+  outline: 0 !important;
+  box-sizing: border-box;
+  padding: 12px 15px;
+}
+
+.options_container {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+.submit_btn {
+  margin: 20px auto 20px auto;
+  width: 30%;
+}
