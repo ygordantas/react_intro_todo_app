@@ -1,10 +1,10 @@
 import { useState } from "react";
 
 import Todo from "../../models/todo";
-import TodoCategories from "../../enums/todoCategories";
 import TodoPriorityIds from "../../enums/TodoPriorityIds";
 import TODO_PRIORITIES from "../../constants/todoPriorities";
 import TodoPriority from "../../models/todoPriority";
+import TODO_CATEGORIES from "../../constants/todoCategories";
 
 const PLACEHOLDER_CATEGORY_SELECT_TEXT = "Choose a category:";
 
@@ -12,38 +12,42 @@ const DEFAULT_TODO_PRIORITY: TodoPriority = TODO_PRIORITIES.find(
   (p) => p.id === TodoPriorityIds.Medium
 )!;
 
-const AddTodoForm = (): JSX.Element => {
-  const [todo, setTodo] = useState<Todo>({
-    text: "",
-    priority: DEFAULT_TODO_PRIORITY,
-  });
+const DEFAULT_TODO_FORM_DATA: Todo = {
+  text: "",
+  priority: DEFAULT_TODO_PRIORITY,
+};
 
+interface AddTodoFormProps {
+  onSubmit: (newTodo: Todo) => void;
+}
+
+const AddTodoForm = ({ onSubmit }: AddTodoFormProps): JSX.Element => {
+  //--- Form Data ---//
+  const [todo, setTodo] = useState<Todo>(DEFAULT_TODO_FORM_DATA);
+
+  //--- Methods ---//
   const onTodoTextChangeHandler = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
-    setTodo((currentTodo) => {
-      return {
-        ...currentTodo,
-        text: event.target.value,
-      };
-    });
+    setTodo((currentTodo) => ({
+      ...currentTodo,
+      text: event.target.value,
+    }));
   };
 
   const onSelectCategoryChangeHandler = (
     event: React.ChangeEvent<HTMLSelectElement>
   ): void => {
-    const value = event.target.value;
-    const option =
-      value === PLACEHOLDER_CATEGORY_SELECT_TEXT
-        ? TodoCategories.Unknown
-        : (value as TodoCategories);
+    const selectedCategoryId = Number(event.target.value);
 
-    setTodo((currentTodo) => {
-      return {
-        ...currentTodo,
-        category: option,
-      };
-    });
+    const categorySelected = TODO_CATEGORIES.find(
+      (category) => category.id === selectedCategoryId
+    );
+
+    setTodo((currentTodo) => ({
+      ...currentTodo,
+      category: categorySelected,
+    }));
   };
 
   const onSelectPriorityChangeHandler = (
@@ -63,21 +67,27 @@ const AddTodoForm = (): JSX.Element => {
     });
   };
 
+  const onSubmitHandler = (event: React.FormEvent) => {
+    event.preventDefault();
+    const newTodoToInsert = { ...todo, createdAt: new Date() };
+
+    onSubmit(newTodoToInsert);
+    setTodo(DEFAULT_TODO_FORM_DATA);
+  };
+
+  //--- JSX ---//
   const categoryOptions = (
     <select
-      value={todo.category}
+      value={todo.category?.id ?? ""}
       onChange={onSelectCategoryChangeHandler}
       name="Category"
     >
-      {Object.values(TodoCategories)
-        .map((value, index) => {
-          return (
-            <option key={index}>
-              {value || PLACEHOLDER_CATEGORY_SELECT_TEXT}
-            </option>
-          );
-        })
-        .reverse()}
+      <option>{PLACEHOLDER_CATEGORY_SELECT_TEXT}</option>
+      {TODO_CATEGORIES.map((category) => (
+        <option key={category.id} value={category.id}>
+          {category.name}
+        </option>
+      ))}
     </select>
   );
 
@@ -98,7 +108,7 @@ const AddTodoForm = (): JSX.Element => {
   );
 
   return (
-    <form onSubmit={(e) => console.log(e)}>
+    <form onSubmit={onSubmitHandler}>
       <input
         onChange={onTodoTextChangeHandler}
         type="text"
@@ -109,9 +119,6 @@ const AddTodoForm = (): JSX.Element => {
       {categoryOptions}
       {priorityOptions}
 
-      <p>Text: {todo.text}</p>
-      <p>Priority: {todo.priority.name}</p>
-      <p>Category you selected: {todo.category}</p>
       <button type="submit">+ Add</button>
     </form>
   );
