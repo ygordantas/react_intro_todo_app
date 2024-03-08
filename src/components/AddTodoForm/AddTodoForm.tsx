@@ -7,6 +7,8 @@ import TodoPriority from "../../models/todoPriority";
 import TODO_CATEGORIES from "../../constants/todoCategories";
 import Button from "../Button/Button";
 import classes from "./AddTodoForm.module.css";
+import TextInput from "../TextInput/TextInput";
+import SelectDropdown from "../SelectDropdown/SelectDropdown";
 
 const PLACEHOLDER_CATEGORY_SELECT_TEXT = "Choose a category:";
 
@@ -78,21 +80,6 @@ const AddTodoForm = ({ onSubmit }: AddTodoFormProps): JSX.Element => {
   };
 
   //--- JSX ---//
-  const categoryOptions = (
-    <select
-      value={todo.category?.id ?? ""}
-      onChange={onSelectCategoryChangeHandler}
-      name="Category"
-    >
-      <option>{PLACEHOLDER_CATEGORY_SELECT_TEXT}</option>
-      {TODO_CATEGORIES.map((category) => (
-        <option key={category.id} value={category.id}>
-          {category.name}
-        </option>
-      ))}
-    </select>
-  );
-
   const priorityOptions = (
     <select
       value={todo.priority.id}
@@ -111,20 +98,27 @@ const AddTodoForm = ({ onSubmit }: AddTodoFormProps): JSX.Element => {
 
   return (
     <form className={classes.todo_form} onSubmit={onSubmitHandler}>
-      <div className={classes.input_container}>
-        <input
-          onChange={onTodoTextChangeHandler}
-          type="text"
-          placeholder="what's in your todo"
-          value={todo.text}
-        />
-      </div>
+      <TextInput
+        placeholder="Enter your todo here..."
+        value={todo.text}
+        onChange={onTodoTextChangeHandler}
+      />
       <div className={classes.options_container}>
-        {categoryOptions}
+        <SelectDropdown
+          value={todo.category?.id ?? ""}
+          onChange={onSelectCategoryChangeHandler}
+          name="Category"
+          placeholder={PLACEHOLDER_CATEGORY_SELECT_TEXT}
+          options={TODO_CATEGORIES.map((category) => ({
+            value: category.id,
+            displayValue: category.name,
+          }))}
+        />
         {priorityOptions}
       </div>
-
-      <Button className={classes.submit_btn} type="submit">+ Add</Button>
+      <Button className={classes.submit_btn} type="submit">
+        + Add
+      </Button>
     </form>
   );
 };
