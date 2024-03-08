@@ -9,6 +9,7 @@ import Button from "../Button/Button";
 import classes from "./AddTodoForm.module.css";
 import TextInput from "../TextInput/TextInput";
 import SelectDropdown from "../SelectDropdown/SelectDropdown";
+import SmileEmoji from "../../assets/icons/emoji.svg";
 
 const PLACEHOLDER_CATEGORY_SELECT_TEXT = "Choose a category:";
 
@@ -73,6 +74,10 @@ const AddTodoForm = ({ onSubmit }: AddTodoFormProps): JSX.Element => {
 
   const onSubmitHandler = (event: React.FormEvent) => {
     event.preventDefault();
+    if (!todo.text) {
+      alert("Can't add an empty todo.");
+      return;
+    }
     const newTodoToInsert = { ...todo, createdAt: new Date() };
 
     onSubmit(newTodoToInsert);
@@ -80,24 +85,11 @@ const AddTodoForm = ({ onSubmit }: AddTodoFormProps): JSX.Element => {
   };
 
   //--- JSX ---//
-  const priorityOptions = (
-    <select
-      value={todo.priority.id}
-      onChange={onSelectPriorityChangeHandler}
-      name="Priority"
-    >
-      {TODO_PRIORITIES.map((todoPriority, index) => {
-        return (
-          <option value={todoPriority.id} key={index}>
-            {todoPriority.name}
-          </option>
-        );
-      })}
-    </select>
-  );
-
   return (
     <form className={classes.todo_form} onSubmit={onSubmitHandler}>
+      <h3 className={classes.title}>
+        Create your todo now <img src={SmileEmoji}></img>
+      </h3>
       <TextInput
         placeholder="Enter your todo here..."
         value={todo.text}
@@ -114,7 +106,15 @@ const AddTodoForm = ({ onSubmit }: AddTodoFormProps): JSX.Element => {
             displayValue: category.name,
           }))}
         />
-        {priorityOptions}
+        <SelectDropdown
+          value={todo.priority.id}
+          onChange={onSelectPriorityChangeHandler}
+          name="Priority"
+          options={TODO_PRIORITIES.map((category) => ({
+            value: category.id,
+            displayValue: category.name,
+          }))}
+        />
       </div>
       <Button className={classes.submit_btn} type="submit">
         + Add

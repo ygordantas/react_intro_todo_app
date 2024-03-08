@@ -1,5 +1,6 @@
 import SelectDropdownOption from "../../models/selectDropdownOption";
 import SelectDropdownItem from "../SelectDropdownItem/SelectDropdownItem";
+import classes from './SelectDropdown.module.css'
 
 interface SelectDropdownProps {
   options: SelectDropdownOption[];
@@ -17,7 +18,7 @@ const SelectDropdown = ({
   onChange,
 }: SelectDropdownProps): JSX.Element => {
   return (
-    <select value={value} onChange={onChange} name={name}>
+    <select className={classes.select} value={value} onChange={onChange} name={name}>
       {placeholder && <SelectDropdownItem>{placeholder}</SelectDropdownItem>}
       {options.map((option) => (
         <SelectDropdownItem key={option.value} value={option.value}>
