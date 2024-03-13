@@ -27,6 +27,9 @@ interface AddTodoFormProps {
 }
 
 const AddTodoForm = ({ onSubmit }: AddTodoFormProps): JSX.Element => {
+  //--- Form State ---//
+  const [isFormValid, setIsFormValid] = useState<boolean>(true);
+
   //--- Form Data ---//
   const [todo, setTodo] = useState<Todo>(DEFAULT_TODO_FORM_DATA);
 
@@ -74,14 +77,22 @@ const AddTodoForm = ({ onSubmit }: AddTodoFormProps): JSX.Element => {
 
   const onSubmitHandler = (event: React.FormEvent) => {
     event.preventDefault();
-    if (!todo.text) {
-      alert("Can't add an empty todo.");
+
+    if (todo.text.trim()) {
+      const newTodoToInsert = { ...todo, createdAt: new Date() };
+
+      onSubmit(newTodoToInsert);
+      setTodo(DEFAULT_TODO_FORM_DATA);
+      setIsFormValid(true);
       return;
     }
-    const newTodoToInsert = { ...todo, createdAt: new Date() };
 
-    onSubmit(newTodoToInsert);
-    setTodo(DEFAULT_TODO_FORM_DATA);
+    setTodo((currentTodo) => ({
+      ...currentTodo,
+      text: "",
+    }));
+
+    setIsFormValid(false);
   };
 
   //--- JSX ---//
@@ -94,7 +105,17 @@ const AddTodoForm = ({ onSubmit }: AddTodoFormProps): JSX.Element => {
         placeholder="Enter your todo here..."
         value={todo.text}
         onChange={onTodoTextChangeHandler}
+        required={true}
       />
+
+      <p
+        className={
+          todo.text === "" && !isFormValid ? classes.error_message : "hide"
+        }
+      >
+        This field is required!
+      </p>
+
       <div className={classes.options_container}>
         <SelectDropdown
           value={todo.category?.id ?? ""}

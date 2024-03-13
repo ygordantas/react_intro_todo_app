@@ -13,3 +13,12 @@ body {
   min-width: 100vw;
   min-height: 100vh;
 }
+
+#root {
+  width: 100%;
+}
+
+.hide {
+  visibility: hidden;
+  display: block;
+}

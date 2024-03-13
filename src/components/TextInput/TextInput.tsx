@@ -6,6 +6,7 @@ interface TextInputProps {
   placeholder?: string;
   value?: string;
   disabled?: boolean;
+  required?: boolean;
 }
 
 const TextInput = ({
@@ -13,6 +14,7 @@ const TextInput = ({
   value,
   disabled,
   onChange,
+  required,
   type = "text",
 }: TextInputProps): JSX.Element => {
   return (
@@ -23,6 +25,7 @@ const TextInput = ({
         placeholder={placeholder}
         value={value}
         disabled={disabled}
+        required={required}
       />
     </div>
   );
