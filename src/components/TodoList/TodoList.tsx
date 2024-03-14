@@ -1,3 +1,4 @@
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import Todo from "../../models/todo";
 import classes from "./TodoList.module.css";
 
@@ -6,8 +7,10 @@ interface TodoListProps {
 }
 
 const TodoList = ({ todos }: TodoListProps): JSX.Element => {
+  const [parent] = useAutoAnimate({duration: 300});
+
   return (
-    <ul className={classes.list}>
+    <ul ref={parent} className={classes.list}>
       {todos.map((currentTodo, index) => {
         return (
           <li className={classes.item_container} key={index}>
