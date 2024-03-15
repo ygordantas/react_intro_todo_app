@@ -13,10 +13,18 @@ const TodoPage = (): JSX.Element => {
     setTodos((currentTodos) => [...currentTodos, newTodo]);
   };
 
+  const onTodoDeleteClickHandler = (index: number) => {
+    setTodos((currentTodos) => {
+      const copy = [...currentTodos];
+      copy.splice(index,1);
+      return copy;
+    });
+  };
+
   return (
     <div className={classes.container}>
       <AddTodoForm onSubmit={onTodoFormSubmit} />
-      <TodoList todos={todos} />
+      <TodoList onTodoDeleteClicked={onTodoDeleteClickHandler} todos={todos} />
     </div>
   );
 };

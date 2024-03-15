@@ -2,22 +2,20 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 import TodoPriorityIds from "../../enums/TodoPriorityIds";
 import Todo from "../../models/todo";
-import HalfStarIcon from "../Icons/HalfStarIcon";
-import StartIcon from "../Icons/StarIcon";
 import classes from "./TodoList.module.css";
 import TodoCategoryIds from "../../enums/TodoCategoryIds";
-import FamilyCategoryIcon from "../Icons/FamilyCategoryIcon";
-import CookingCategoryIcon from "../Icons/CookingCategoryIcon";
-import FinanceCategoryIcon from "../Icons/FinanceCategoryIcon";
-import GardeningCategoryIcon from "../Icons/GardeningCategoryIcon";
-import GroceriesCategoryIcon from "../Icons/GroceriesCategoryIcon";
-import WorkCategoryIcon from "../Icons/WorkCategoryIcon";
+import Icon from "../Icon/Icon";
+import IconOptions from "../../enums/IconOptions";
 
 interface TodoListProps {
   todos: Todo[];
+  onTodoDeleteClicked: (index: number) => void;
 }
 
-const TodoList = ({ todos }: TodoListProps): JSX.Element => {
+const TodoList = ({
+  todos,
+  onTodoDeleteClicked,
+}: TodoListProps): JSX.Element => {
   const [parent] = useAutoAnimate();
 
   const getPriorityIconsBasedOnPriorityId = (
@@ -27,13 +25,14 @@ const TodoList = ({ todos }: TodoListProps): JSX.Element => {
       case TodoPriorityIds.High:
         return (
           <>
-            <StartIcon /> <StartIcon />
+            <Icon iconType={IconOptions.FullStar} />
+            <Icon iconType={IconOptions.FullStar} />
           </>
         );
       case TodoPriorityIds.Medium:
-        return <StartIcon />;
+        return <Icon iconType={IconOptions.FullStar} />;
       default:
-        return <HalfStarIcon />;
+        return <Icon iconType={IconOptions.HalfStar} />;
     }
   };
 
@@ -42,17 +41,17 @@ const TodoList = ({ todos }: TodoListProps): JSX.Element => {
   ): JSX.Element => {
     switch (categoryId) {
       case TodoCategoryIds.Cooking:
-        return <CookingCategoryIcon />;
+        return <Icon iconType={IconOptions.Cooking} />;
       case TodoCategoryIds.Finance:
-        return <FinanceCategoryIcon />;
+        return <Icon iconType={IconOptions.Finance} />;
       case TodoCategoryIds.Family:
-        return <FamilyCategoryIcon />;
+        return <Icon iconType={IconOptions.Family} />;
       case TodoCategoryIds.Gardening:
-        return <GardeningCategoryIcon />;
+        return <Icon iconType={IconOptions.Gardening} />;
       case TodoCategoryIds.Groceries:
-        return <GroceriesCategoryIcon />;
+        return <Icon iconType={IconOptions.Groceries} />;
       case TodoCategoryIds.Work:
-        return <WorkCategoryIcon />;
+        return <Icon iconType={IconOptions.Work} />;
       default:
         return <></>;
     }
@@ -73,8 +72,15 @@ const TodoList = ({ todos }: TodoListProps): JSX.Element => {
               </div>
             </div>
             <div className={classes.icon_container}>
-              {getPriorityIconsBasedOnPriorityId(currentTodo.priority.id)}
-              {getCategoryIconBasedOnCategoryId(currentTodo.category?.id)}
+              <div>
+                {getPriorityIconsBasedOnPriorityId(currentTodo.priority.id)}
+                {getCategoryIconBasedOnCategoryId(currentTodo.category?.id)}
+              </div>
+              <Icon
+                onClick={() => onTodoDeleteClicked(index)}
+                iconType={IconOptions.Delete}
+                className={classes.delete_btn}
+              />
             </div>
           </li>
         );

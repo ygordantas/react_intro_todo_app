@@ -20,10 +20,19 @@
   background-color: #d4e0dc;
 }
 
+.delete_btn {
+  display: none;
+  color: red;
+}
+
 .item_container:hover {
   background-color: antiquewhite;
   scale: 1.01;
   width: 97%;
+}
+
+.item_container:hover .delete_btn {
+  display: flex;
 }
 
 .todo_details_container {
@@ -34,6 +43,9 @@
 
 .icon_container {
   padding-right: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .timestamp_section {
