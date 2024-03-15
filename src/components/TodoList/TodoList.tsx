@@ -1,4 +1,9 @@
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+
+import TodoPriorityIds from "../../enums/TodoPriorityIds";
 import Todo from "../../models/todo";
+import HalfStarIcon from "../Icons/HalfStarIcon";
+import StartIcon from "../Icons/StarIcon";
 import classes from "./TodoList.module.css";
 
 interface TodoListProps {
@@ -6,8 +11,26 @@ interface TodoListProps {
 }
 
 const TodoList = ({ todos }: TodoListProps): JSX.Element => {
+  const [parent] = useAutoAnimate();
+
+  const getPriorityIconsBasedOnPriorityId = (
+    priorityId: number
+  ): JSX.Element => {
+    switch (priorityId) {
+      case TodoPriorityIds.High:
+        return (
+          <>
+            <StartIcon /> <StartIcon />
+          </>
+        );
+      case TodoPriorityIds.Medium:
+        return <StartIcon />;
+      default:
+        return <HalfStarIcon />;
+    }
+  };
   return (
-    <ul className={classes.list}>
+    <ul ref={parent} className={classes.list}>
       {todos.map((currentTodo, index) => {
         return (
           <li className={classes.item_container} key={index}>
@@ -22,8 +45,7 @@ const TodoList = ({ todos }: TodoListProps): JSX.Element => {
               </div>
             </div>
             <div className={classes.icon_container}>
-              <p>{currentTodo.priority.name}</p>
-              <span className="material-symbols-outlined">star</span>
+              {getPriorityIconsBasedOnPriorityId(currentTodo.priority.id)}
               {currentTodo.category?.name && <p>{currentTodo.category.name}</p>}
             </div>
           </li>
