@@ -23,8 +23,20 @@ const TodoPage = (): JSX.Element => {
   const [nextSortByPriority, setNextSortByPriority] = useState<"desc" | "asc">(
     "asc"
   );
+  const [sortBtnText, setSortBtnText] = useState<string>("Sort by Priority");
 
   //--- Methods ---//
+  const toggleNextSortByPriority = () => {
+    if (nextSortByPriority === "asc") {
+      setNextSortByPriority("desc");
+      setSortBtnText("Sort by lowest priority");
+      return;
+    }
+
+    setNextSortByPriority("asc");
+    setSortBtnText("Sort by highest priority");
+  };
+
   const onTodoFormSubmit = (newTodo: Todo) => {
     setTodos((currentTodos) => [...currentTodos, newTodo]);
   };
@@ -52,9 +64,7 @@ const TodoPage = (): JSX.Element => {
       });
     });
 
-    if (nextSortByPriority === "asc") return setNextSortByPriority("desc");
-
-    setNextSortByPriority("asc");
+    toggleNextSortByPriority();
   };
 
   return (
@@ -65,7 +75,7 @@ const TodoPage = (): JSX.Element => {
           onClick={onSortByPriorityBtnClickHandler}
           className={classes.sortBtn}
         >
-          Sort by Priority
+          {sortBtnText}
         </Button>
         <TodoList
           onTodoDeleteClicked={onTodoDeleteClickHandler}
