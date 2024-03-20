@@ -9,7 +9,7 @@ import Button from "../Button/Button";
 import classes from "./AddTodoForm.module.css";
 import TextInput from "../TextInput/TextInput";
 import SelectDropdown from "../SelectDropdown/SelectDropdown";
-import SmileEmoji from "../../assets/icons/emoji.svg";
+import { useLocation } from "react-router-dom";
 
 const PLACEHOLDER_CATEGORY_SELECT_TEXT = "Choose a category:";
 
@@ -27,6 +27,8 @@ interface AddTodoFormProps {
 }
 
 const AddTodoForm = ({ onSubmit }: AddTodoFormProps): JSX.Element => {
+  const {state} = useLocation();
+  
   //--- Form State ---//
   const [isFormValid, setIsFormValid] = useState<boolean>(true);
 
@@ -98,9 +100,7 @@ const AddTodoForm = ({ onSubmit }: AddTodoFormProps): JSX.Element => {
   //--- JSX ---//
   return (
     <form className={classes.todo_form} onSubmit={onSubmitHandler}>
-      <h3 className={classes.title}>
-        Create your todo now <img src={SmileEmoji}></img>
-      </h3>
+      <h3 className={classes.title}>Hello, {state && state.username}</h3>
       <TextInput
         placeholder="Enter your todo here..."
         value={todo.text}

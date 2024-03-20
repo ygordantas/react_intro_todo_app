@@ -1,11 +1,11 @@
 import { useState } from "react";
 
-import AddTodoForm from "../components/AddTodoForm/AddTodoForm";
-import TodoList from "../components/TodoList/TodoList";
-import Todo from "../models/todo";
+import AddTodoForm from "../../components/AddTodoForm/AddTodoForm";
+import TodoList from "../../components/TodoList/TodoList";
+import Todo from "../../models/todo";
 import classes from "./TodoPage.module.css";
-import Button from "../components/Button/Button";
-import TODO_PRIORITIES from "../constants/todoPriorities";
+import Button from "../../components/Button/Button";
+import TODO_PRIORITIES from "../../constants/todoPriorities";
 
 //TODO: REMOVE THIS
 const MOCK_TODOS: Todo[] = [
