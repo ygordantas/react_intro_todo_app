@@ -6,6 +6,8 @@ import Todo from "../../models/todo";
 import classes from "./TodoPage.module.css";
 import Button from "../../components/Button/Button";
 import TODO_PRIORITIES from "../../constants/todoPriorities";
+import Card from "../../components/Card/Card";
+import { Navigate, useLocation } from "react-router-dom";
 
 //TODO: REMOVE THIS
 const MOCK_TODOS: Todo[] = [
@@ -19,6 +21,8 @@ const MOCK_TODOS: Todo[] = [
 ];
 
 const TodoPage = (): JSX.Element => {
+  const { state } = useLocation();
+
   const [todos, setTodos] = useState<Todo[]>(MOCK_TODOS);
   const [nextSortByPriority, setNextSortByPriority] = useState<"desc" | "asc">(
     "asc"
@@ -67,9 +71,14 @@ const TodoPage = (): JSX.Element => {
     toggleNextSortByPriority();
   };
 
-  return (
+  return state?.username ? (
     <div className={classes.container}>
-      <AddTodoForm onSubmit={onTodoFormSubmit} />
+      <div className={classes.todo_form_container}>
+        <Card title={`Hello, ${state.username}`}>
+          <AddTodoForm onSubmit={onTodoFormSubmit} />
+        </Card>
+      </div>
+
       <div className={classes.listContainer}>
         <Button
           onClick={onSortByPriorityBtnClickHandler}
@@ -83,6 +92,8 @@ const TodoPage = (): JSX.Element => {
         />
       </div>
     </div>
+  ) : (
+    <Navigate to={"/"} />
   );
 };
 

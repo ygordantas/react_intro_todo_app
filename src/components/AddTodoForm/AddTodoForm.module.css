@@ -1,13 +1,9 @@
 .todo_form {
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 50vw;
-  height: 100vh;
-  background-color: darkslategrey;
+  flex-direction: column;
 }
-
 .options_container {
   display: flex;
   flex-direction: row;
@@ -17,8 +13,8 @@
 }
 
 .submit_btn {
-  margin: 20px auto 20px auto;
   width: 20%;
+  margin-top: 60px;
 }
 
 .title {

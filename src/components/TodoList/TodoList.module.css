@@ -27,8 +27,6 @@
 
 .item_container:hover {
   background-color: antiquewhite;
-  scale: 1.01;
-  width: 97%;
 }
 
 .item_container:hover .delete_btn {
