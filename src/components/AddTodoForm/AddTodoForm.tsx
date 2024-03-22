@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Navigate, useLocation } from "react-router-dom";
 
 import Todo from "../../models/todo";
 import TodoPriorityIds from "../../enums/TodoPriorityIds";
@@ -9,7 +10,6 @@ import Button from "../Button/Button";
 import classes from "./AddTodoForm.module.css";
 import TextInput from "../TextInput/TextInput";
 import SelectDropdown from "../SelectDropdown/SelectDropdown";
-import { useLocation } from "react-router-dom";
 
 const PLACEHOLDER_CATEGORY_SELECT_TEXT = "Choose a category:";
 
@@ -27,8 +27,8 @@ interface AddTodoFormProps {
 }
 
 const AddTodoForm = ({ onSubmit }: AddTodoFormProps): JSX.Element => {
-  const {state} = useLocation();
-  
+  const { state } = useLocation();
+
   //--- Form State ---//
   const [isFormValid, setIsFormValid] = useState<boolean>(true);
 
@@ -98,9 +98,9 @@ const AddTodoForm = ({ onSubmit }: AddTodoFormProps): JSX.Element => {
   };
 
   //--- JSX ---//
-  return (
+  return state?.username ? (
     <form className={classes.todo_form} onSubmit={onSubmitHandler}>
-      <h3 className={classes.title}>Hello, {state && state.username}</h3>
+      <h3 className={classes.title}>Hello, {state.username}</h3>
       <TextInput
         placeholder="Enter your todo here..."
         value={todo.text}
@@ -141,7 +141,13 @@ const AddTodoForm = ({ onSubmit }: AddTodoFormProps): JSX.Element => {
         + Add
       </Button>
     </form>
+  ) : (
+    <Navigate to={"/"} />
   );
 };
 
 export default AddTodoForm;
+
+// We install a pkg that allows to create SPA. What's the library ? React Router
+// How do we install. NPM install (bring a 3rd party lib requires npm)
+// What's a SPAs ?  Single Page application

@@ -2,35 +2,35 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import TextInput from "../TextInput/TextInput";
-import classes from "./UserForm.module.css";
 import Button from "../Button/Button";
+import classes from './UserForm.module.css'
 
 const UserForm = () => {
-  const [username, setUsername] = useState("");
-
+  //--- Custom Hooks ---//
   const navigate = useNavigate();
 
+  //--- States ---//
+  const [username, setUsername] = useState("");
+
+  //--- Methods ---//
   const onSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     navigate("/todos", { state: { username } });
   };
 
+  //--- JSX ---/
   return (
-    <div className={classes.card}>
-      <h3>Welcome to your TODO app</h3>
-      <p>Please enter your username below to proceed.</p>
-      <form onSubmit={onSubmitHandler}>
-        <TextInput
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="username"
-          required
-        />
+    <form className={classes.form} onSubmit={onSubmitHandler}>
+      <TextInput
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        placeholder="username"
+        required
+      />
 
-        <Button type="submit">Next</Button>
-      </form>
-    </div>
+      <Button type="submit">Next</Button>
+    </form>
   );
 };
 
