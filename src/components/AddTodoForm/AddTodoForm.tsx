@@ -1,14 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Todo from "../../models/todo";
 import TodoPriorityIds from "../../enums/TodoPriorityIds";
 import TODO_PRIORITIES from "../../constants/todoPriorities";
 import TodoPriority from "../../models/todoPriority";
-import TODO_CATEGORIES from "../../constants/todoCategories";
 import Button from "../Button/Button";
 import classes from "./AddTodoForm.module.css";
 import TextInput from "../TextInput/TextInput";
 import SelectDropdown from "../SelectDropdown/SelectDropdown";
+import TodoCategory from "../../models/todoCategory";
 
 const PLACEHOLDER_CATEGORY_SELECT_TEXT = "Choose a category:";
 
@@ -28,9 +28,27 @@ interface AddTodoFormProps {
 const AddTodoForm = ({ onSubmit }: AddTodoFormProps): JSX.Element => {
   //--- Form State ---//
   const [isFormValid, setIsFormValid] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   //--- Form Data ---//
   const [todo, setTodo] = useState<Todo>(DEFAULT_TODO_FORM_DATA);
+  const [categories, setCategories] = useState<TodoCategory[]>([]);
+
+  useEffect(() => {
+    const getCategories = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/categories");
+        const responseData = (await response.json()) as TodoCategory[];
+        setCategories(responseData);
+      } catch (error) {
+        console.warn(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    getCategories();
+  }, []);
 
   //--- Methods ---//
   const onTodoTextChangeHandler = (
@@ -45,10 +63,10 @@ const AddTodoForm = ({ onSubmit }: AddTodoFormProps): JSX.Element => {
   const onSelectCategoryChangeHandler = (
     event: React.ChangeEvent<HTMLSelectElement>
   ): void => {
-    const selectedCategoryId = Number(event.target.value);
+    const selectedCategoryId = event.target.value;
 
-    const categorySelected = TODO_CATEGORIES.find(
-      (category) => category.id === selectedCategoryId
+    const categorySelected = categories.find(
+      (category) => category._id === selectedCategoryId
     );
 
     setTodo((currentTodo) => ({
@@ -95,7 +113,9 @@ const AddTodoForm = ({ onSubmit }: AddTodoFormProps): JSX.Element => {
   };
 
   //--- JSX ---//
-  return (
+  return isLoading ? (
+    <div>"Loading..."</div>
+  ) : (
     <form className={classes.todo_form} onSubmit={onSubmitHandler}>
       <TextInput
         placeholder="Enter your todo here..."
@@ -114,12 +134,12 @@ const AddTodoForm = ({ onSubmit }: AddTodoFormProps): JSX.Element => {
 
       <div className={classes.options_container}>
         <SelectDropdown
-          value={todo.category?.id ?? ""}
+          value={todo.category?._id ?? ""}
           onChange={onSelectCategoryChangeHandler}
           name="Category"
           placeholder={PLACEHOLDER_CATEGORY_SELECT_TEXT}
-          options={TODO_CATEGORIES.map((category) => ({
-            value: category.id,
+          options={categories.map((category) => ({
+            value: category._id,
             displayValue: category.name,
           }))}
         />
