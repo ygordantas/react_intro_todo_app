@@ -1,7 +1,5 @@
-import IconOptions from "../../enums/IconOptions";
-
 interface IconProps {
-  iconType: IconOptions;
+  iconType: string;
   className?: string;
   style?: React.CSSProperties;
   id?: string;

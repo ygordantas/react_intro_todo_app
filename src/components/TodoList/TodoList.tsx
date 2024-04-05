@@ -3,7 +3,6 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import TodoPriorityIds from "../../enums/TodoPriorityIds";
 import Todo from "../../models/todo";
 import classes from "./TodoList.module.css";
-import TodoCategoryIds from "../../enums/TodoCategoryIds";
 import Icon from "../Icon/Icon";
 import IconOptions from "../../enums/IconOptions";
 
@@ -36,26 +35,6 @@ const TodoList = ({
     }
   };
 
-  const getCategoryIconBasedOnCategoryId = (
-    categoryId?: number
-  ): JSX.Element => {
-    switch (categoryId) {
-      case TodoCategoryIds.Cooking:
-        return <Icon iconType={IconOptions.Cooking} />;
-      case TodoCategoryIds.Finance:
-        return <Icon iconType={IconOptions.Finance} />;
-      case TodoCategoryIds.Family:
-        return <Icon iconType={IconOptions.Family} />;
-      case TodoCategoryIds.Gardening:
-        return <Icon iconType={IconOptions.Gardening} />;
-      case TodoCategoryIds.Groceries:
-        return <Icon iconType={IconOptions.Groceries} />;
-      case TodoCategoryIds.Work:
-        return <Icon iconType={IconOptions.Work} />;
-      default:
-        return <></>;
-    }
-  };
   return (
     <ul ref={parent} className={classes.list}>
       {todos.map((currentTodo, index) => {
@@ -74,7 +53,9 @@ const TodoList = ({
             <div className={classes.icon_container}>
               <div>
                 {getPriorityIconsBasedOnPriorityId(currentTodo.priority.id)}
-                {getCategoryIconBasedOnCategoryId(currentTodo.category?.id)}
+                {currentTodo.category && (
+                  <Icon iconType={currentTodo.category.iconOptionName} />
+                )}
               </div>
               <Icon
                 onClick={() => onTodoDeleteClicked(index)}
