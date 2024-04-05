@@ -4,11 +4,11 @@ import Todo from "../../models/todo";
 import TodoPriorityIds from "../../enums/TodoPriorityIds";
 import TODO_PRIORITIES from "../../constants/todoPriorities";
 import TodoPriority from "../../models/todoPriority";
-import TODO_CATEGORIES from "../../constants/todoCategories";
 import Button from "../Button/Button";
 import classes from "./AddTodoForm.module.css";
 import TextInput from "../TextInput/TextInput";
 import SelectDropdown from "../SelectDropdown/SelectDropdown";
+import TodoCategory from "../../models/todoCategory";
 
 const PLACEHOLDER_CATEGORY_SELECT_TEXT = "Choose a category:";
 
@@ -23,9 +23,13 @@ const DEFAULT_TODO_FORM_DATA: Todo = {
 
 interface AddTodoFormProps {
   onSubmit: (newTodo: Todo) => void;
+  todoCategories: TodoCategory[];
 }
 
-const AddTodoForm = ({ onSubmit }: AddTodoFormProps): JSX.Element => {
+const AddTodoForm = ({
+  onSubmit,
+  todoCategories,
+}: AddTodoFormProps): JSX.Element => {
   //--- Form State ---//
   const [isFormValid, setIsFormValid] = useState<boolean>(true);
 
@@ -45,10 +49,10 @@ const AddTodoForm = ({ onSubmit }: AddTodoFormProps): JSX.Element => {
   const onSelectCategoryChangeHandler = (
     event: React.ChangeEvent<HTMLSelectElement>
   ): void => {
-    const selectedCategoryId = Number(event.target.value);
+    const selectedCategoryId = event.target.value;
 
-    const categorySelected = TODO_CATEGORIES.find(
-      (category) => category.id === selectedCategoryId
+    const categorySelected = todoCategories.find(
+      (category) => category._id === selectedCategoryId
     );
 
     setTodo((currentTodo) => ({
@@ -114,12 +118,12 @@ const AddTodoForm = ({ onSubmit }: AddTodoFormProps): JSX.Element => {
 
       <div className={classes.options_container}>
         <SelectDropdown
-          value={todo.category?.id ?? ""}
+          value={todo.category?._id ?? ""}
           onChange={onSelectCategoryChangeHandler}
           name="Category"
           placeholder={PLACEHOLDER_CATEGORY_SELECT_TEXT}
-          options={TODO_CATEGORIES.map((category) => ({
-            value: category.id,
+          options={todoCategories.map((category) => ({
+            value: category._id,
             displayValue: category.name,
           }))}
         />
