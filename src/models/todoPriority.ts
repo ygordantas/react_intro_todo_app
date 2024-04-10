@@ -1,5 +1,6 @@
 export default interface TodoPriority {
-  id: number;
+  _id: string;
   name: string;
   sortKey: number 
+  iconOptionName: string
 }

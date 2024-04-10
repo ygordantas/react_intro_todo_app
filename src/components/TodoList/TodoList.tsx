@@ -1,6 +1,5 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 
-import TodoPriorityIds from "../../enums/TodoPriorityIds";
 import Todo from "../../models/todo";
 import classes from "./TodoList.module.css";
 import Icon from "../Icon/Icon";
@@ -16,25 +15,7 @@ const TodoList = ({
   onTodoDeleteClicked,
 }: TodoListProps): JSX.Element => {
   const [parent] = useAutoAnimate();
-
-  const getPriorityIconsBasedOnPriorityId = (
-    priorityId: number
-  ): JSX.Element => {
-    switch (priorityId) {
-      case TodoPriorityIds.High:
-        return (
-          <>
-            <Icon iconType={IconOptions.FullStar} />
-            <Icon iconType={IconOptions.FullStar} />
-          </>
-        );
-      case TodoPriorityIds.Medium:
-        return <Icon iconType={IconOptions.FullStar} />;
-      default:
-        return <Icon iconType={IconOptions.HalfStar} />;
-    }
-  };
-
+  
   return (
     <ul ref={parent} className={classes.list}>
       {todos.map((currentTodo, index) => {
@@ -52,7 +33,7 @@ const TodoList = ({
             </div>
             <div className={classes.icon_container}>
               <div>
-                {getPriorityIconsBasedOnPriorityId(currentTodo.priority.id)}
+                {<Icon iconType={currentTodo.priority.iconOptionName} />}
                 {currentTodo.category && (
                   <Icon iconType={currentTodo.category.iconOptionName} />
                 )}

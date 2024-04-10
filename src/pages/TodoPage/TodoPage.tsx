@@ -10,11 +10,13 @@ import { Navigate, useLocation } from "react-router-dom";
 import todoApiService from "../../services/todoApiService";
 import TodoCategory from "../../models/todoCategory";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+import TodoPriority from "../../models/todoPriority";
 
 const TodoPage = (): JSX.Element => {
   const { state } = useLocation();
 
   const [categories, setCategories] = useState<TodoCategory[]>([]);
+  const [priorities, setPriorities] = useState<TodoPriority[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [nextSortByPriority, setNextSortByPriority] = useState<"desc" | "asc">(
@@ -27,8 +29,11 @@ const TodoPage = (): JSX.Element => {
       try {
         const categoriesOptions = await todoApiService.getTodoCategories();
         setCategories(categoriesOptions);
+
+        const priorityOptions = await todoApiService.getTodoPriorities();
+        setPriorities(priorityOptions);
       } catch (error) {
-        alert("Something went wrong");
+        alert("Something went trying to retrieve data from server");
       } finally {
         setIsLoading(false);
       }
@@ -86,6 +91,7 @@ const TodoPage = (): JSX.Element => {
       <div className={classes.todo_form_container}>
         <Card title={`Hello, ${state.username}`}>
           <AddTodoForm
+            todoPriorities={priorities}
             todoCategories={categories}
             onSubmit={onTodoFormSubmit}
           />
