@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 import TextInput from "../TextInput/TextInput";
 import Button from "../Button/Button";
-import classes from './UserForm.module.css'
+import classes from "./UserForm.module.css";
+import todoApiService from "../../services/todoApiService";
 
 const UserForm = () => {
   //--- Custom Hooks ---//
@@ -11,12 +12,22 @@ const UserForm = () => {
 
   //--- States ---//
   const [username, setUsername] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   //--- Methods ---//
-  const onSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setIsSubmitting(true);
 
-    navigate("/todos", { state: { username } });
+    try {
+      const user = await todoApiService.createNewUser(username);
+      navigate("/todos", {
+        state: { username: user.username, userId: user._id },
+      });
+    } catch (error) {
+      alert(error);
+    }
+    setIsSubmitting(false);
   };
 
   //--- JSX ---/
@@ -29,7 +40,9 @@ const UserForm = () => {
         required
       />
 
-      <Button type="submit">Next</Button>
+      <Button disabled={isSubmitting} type="submit">
+        {isSubmitting ? "Submitting..." : "Next"}
+      </Button>
     </form>
   );
 };

@@ -4,18 +4,24 @@ import Todo from "../../models/todo";
 import classes from "./TodoList.module.css";
 import Icon from "../Icon/Icon";
 import IconOptions from "../../enums/IconOptions";
+import TodoPriority from "../../models/todoPriority";
+import TodoCategory from "../../models/todoCategory";
 
 interface TodoListProps {
   todos: Todo[];
+  priorityOptions: TodoPriority[];
+  categoryOptions: TodoCategory[];
   onTodoDeleteClicked: (index: number) => void;
 }
 
 const TodoList = ({
   todos,
+  priorityOptions,
+  categoryOptions,
   onTodoDeleteClicked,
 }: TodoListProps): JSX.Element => {
   const [parent] = useAutoAnimate();
-  
+
   return (
     <ul ref={parent} className={classes.list}>
       {todos.map((currentTodo, index) => {
@@ -27,15 +33,29 @@ const TodoList = ({
                 <hr />
                 <p>
                   <strong>Created at:</strong>
-                  {currentTodo.createdAt?.toDateString()}
+                  {currentTodo.createdAt}
                 </p>
               </div>
             </div>
             <div className={classes.icon_container}>
               <div>
-                {<Icon iconType={currentTodo.priority.iconOptionName} />}
-                {currentTodo.category && (
-                  <Icon iconType={currentTodo.category.iconOptionName} />
+                {
+                  currentTodo.priorityId && <Icon
+                    iconType={
+                      priorityOptions.find(
+                        (x) => x._id === currentTodo.priorityId
+                      )!.iconOptionName
+                    }
+                  />
+                }
+                {currentTodo.categoryId && (
+                  <Icon
+                    iconType={
+                      categoryOptions.find(
+                        (x) => x._id == currentTodo.categoryId
+                      )!.iconOptionName
+                    }
+                  />
                 )}
               </div>
               <Icon

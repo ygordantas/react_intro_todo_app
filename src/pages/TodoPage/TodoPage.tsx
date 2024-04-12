@@ -4,7 +4,6 @@ import AddTodoForm from "../../components/AddTodoForm/AddTodoForm";
 import TodoList from "../../components/TodoList/TodoList";
 import Todo from "../../models/todo";
 import classes from "./TodoPage.module.css";
-import Button from "../../components/Button/Button";
 import Card from "../../components/Card/Card";
 import { Navigate, useLocation } from "react-router-dom";
 import todoApiService from "../../services/todoApiService";
@@ -19,11 +18,9 @@ const TodoPage = (): JSX.Element => {
   const [priorities, setPriorities] = useState<TodoPriority[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [nextSortByPriority, setNextSortByPriority] = useState<"desc" | "asc">(
-    "asc"
-  );
-  const [sortBtnText, setSortBtnText] = useState<string>("Sort by Priority");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  //--- Side Effects ---//
   useEffect(() => {
     const getOptions = async () => {
       try {
@@ -35,53 +32,60 @@ const TodoPage = (): JSX.Element => {
       } catch (error) {
         alert("Something went trying to retrieve data from server");
       } finally {
-        setIsLoading(false);
+        !state.userId && setIsLoading(false);
       }
     };
 
     getOptions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    const getUserTodos = async () => {
+      if (categories.length === 0 || priorities.length === 0) return;
+
+      try {
+        !isLoading && setIsLoading(true);
+        const userTodos = await todoApiService.getUserTodos(state.userId);
+        setTodos(userTodos);
+      } catch (error) {
+        alert(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    getUserTodos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.userId, categories, priorities]);
+
   //--- Methods ---//
-  const toggleNextSortByPriority = () => {
-    if (nextSortByPriority === "asc") {
-      setNextSortByPriority("desc");
-      setSortBtnText("Sort by lowest priority");
-      return;
+  const onTodoFormSubmit = async (newTodo: Todo) => {
+    try {
+      setIsSubmitting(true);
+      const savedTodo = await todoApiService.createTodo(newTodo);
+      setTodos((currentTodos) => [...currentTodos, savedTodo]);
+    } catch (error) {
+      alert(error);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setNextSortByPriority("asc");
-    setSortBtnText("Sort by highest priority");
   };
 
-  const onTodoFormSubmit = (newTodo: Todo) => {
-    setTodos((currentTodos) => [...currentTodos, newTodo]);
-  };
-
-  const onTodoDeleteClickHandler = (index: number) => {
-    setTodos((currentTodos) => {
-      const copy = [...currentTodos];
-      copy.splice(index, 1);
-      return copy;
-    });
-  };
-
-  const onSortByPriorityBtnClickHandler = () => {
-    setTodos((currentTodos) => {
-      const sortedTodos = [...currentTodos];
-      return sortedTodos.sort((a, b) => {
-        switch (nextSortByPriority) {
-          case "desc":
-            return a.priority.sortKey - b.priority.sortKey;
-          case "asc":
-            return b.priority.sortKey - a.priority.sortKey;
-          default:
-            return 0;
-        }
+  const onTodoDeleteClickHandler = async (index: number) => {
+    try {
+      setIsLoading(true);
+      await todoApiService.deleteTodo(state.userId, todos[index]._id);
+      setTodos((currentTodos) => {
+        const copy = [...currentTodos];
+        copy.splice(index, 1);
+        return copy;
       });
-    });
-
-    toggleNextSortByPriority();
+    } catch (error) {
+      alert(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return isLoading ? (
@@ -91,21 +95,19 @@ const TodoPage = (): JSX.Element => {
       <div className={classes.todo_form_container}>
         <Card title={`Hello, ${state.username}`}>
           <AddTodoForm
+            userId={state.userId}
             todoPriorities={priorities}
             todoCategories={categories}
+            isSubmitting={isSubmitting}
             onSubmit={onTodoFormSubmit}
           />
         </Card>
       </div>
 
       <div className={classes.listContainer}>
-        <Button
-          onClick={onSortByPriorityBtnClickHandler}
-          className={classes.sortBtn}
-        >
-          {sortBtnText}
-        </Button>
         <TodoList
+          categoryOptions={categories}
+          priorityOptions={priorities}
           onTodoDeleteClicked={onTodoDeleteClickHandler}
           todos={todos}
         />

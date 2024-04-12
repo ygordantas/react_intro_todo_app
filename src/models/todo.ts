@@ -1,10 +1,9 @@
-import TodoCategory from "./todoCategory";
-import TodoPriority from "./todoPriority";
-
 export default interface Todo {
+  _id:string;
   text: string;
-  priority: TodoPriority;
-  category?: TodoCategory;
+  createdBy: string;
+  priorityId: string;
+  categoryId?: string;
   lastUpdatedAt?: Date;
-  createdAt?: Date;
+  createdAt?: string;
 }
