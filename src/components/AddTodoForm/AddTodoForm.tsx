@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Todo from "../../models/todo";
+import TodoCategory from "../../models/todoCategory";
 import TodoPriority from "../../models/todoPriority";
 import Button from "../Button/Button";
-import classes from "./AddTodoForm.module.css";
-import TextInput from "../TextInput/TextInput";
 import SelectDropdown from "../SelectDropdown/SelectDropdown";
-import TodoCategory from "../../models/todoCategory";
+import TextInput from "../TextInput/TextInput";
+import classes from "./AddTodoForm.module.css";
 
 const PLACEHOLDER_CATEGORY_SELECT_TEXT = "Choose a category:";
 
@@ -14,7 +14,7 @@ const createDefaultTodo = (
   todoPriorities: TodoPriority[],
   userId: string
 ): Todo => ({
-  _id:"",
+  _id: "",
   createdBy: userId,
   text: "",
   priorityId: todoPriorities.find((x) => x.name === "Medium")!._id,
@@ -22,18 +22,22 @@ const createDefaultTodo = (
 
 interface AddTodoFormProps {
   onSubmit: (newTodo: Todo) => void;
+  onCancelUpdate: () => void;
   todoCategories: TodoCategory[];
   todoPriorities: TodoPriority[];
   isSubmitting: boolean;
   userId: string;
+  todoToUpdate?: Todo;
 }
 
 const AddTodoForm = ({
   onSubmit,
+  onCancelUpdate,
   todoCategories,
   todoPriorities,
   isSubmitting,
   userId,
+  todoToUpdate,
 }: AddTodoFormProps): JSX.Element => {
   //--- Form State ---//
   const [isFormValid, setIsFormValid] = useState<boolean>(true);
@@ -42,6 +46,14 @@ const AddTodoForm = ({
   const [todo, setTodo] = useState<Todo>(
     createDefaultTodo(todoPriorities, userId)
   );
+
+  useEffect(() => {
+    if (todoToUpdate) {
+      setTodo(todoToUpdate);
+    } else {
+      setTodo(createDefaultTodo(todoPriorities, userId));
+    }
+  }, [todoPriorities, todoToUpdate, userId]);
 
   //--- Methods ---//
   const onTodoTextChangeHandler = (
@@ -104,6 +116,13 @@ const AddTodoForm = ({
 
     setIsFormValid(false);
   };
+  const btnText = todoToUpdate ? "Update" : "+ Add";
+
+  const submitBtn = (
+    <Button disabled={isSubmitting} className={classes.btn} type="submit">
+      {isSubmitting ? "Submitting..." : btnText}
+    </Button>
+  );
 
   //--- JSX ---//
   return (
@@ -144,13 +163,20 @@ const AddTodoForm = ({
           }))}
         />
       </div>
-      <Button
-        disabled={isSubmitting}
-        className={classes.submit_btn}
-        type="submit"
-      >
-        {isSubmitting ? "Submitting..." : "+ Add"}
-      </Button>
+      {todoToUpdate ? (
+        <div className={classes.action_buttons_container}>
+          <Button
+            onClick={onCancelUpdate}
+            disabled={isSubmitting}
+            className={classes.btn + " " + classes.cancel_update_btn}
+          >
+            Cancel
+          </Button>
+          {submitBtn}
+        </div>
+      ) : (
+        submitBtn
+      )}
     </form>
   );
 };

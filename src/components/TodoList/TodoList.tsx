@@ -12,6 +12,7 @@ interface TodoListProps {
   priorityOptions: TodoPriority[];
   categoryOptions: TodoCategory[];
   onTodoDeleteClicked: (todoId: string) => void;
+  onTodoClicked: (todo: Todo) => void;
 }
 
 const TodoList = ({
@@ -19,6 +20,7 @@ const TodoList = ({
   priorityOptions,
   categoryOptions,
   onTodoDeleteClicked,
+  onTodoClicked,
 }: TodoListProps): JSX.Element => {
   const [parent] = useAutoAnimate();
 
@@ -58,11 +60,18 @@ const TodoList = ({
                   />
                 )}
               </div>
-              <Icon
-                onClick={() => onTodoDeleteClicked(currentTodo._id)}
-                iconType={IconOptions.Delete}
-                className={classes.delete_btn}
-              />
+              <div className={classes.action_btns_container}>
+                <Icon
+                  onClick={() => onTodoClicked(currentTodo)}
+                  iconType={IconOptions.Edit}
+                  className={classes.edit_btn + " " + classes.action_btn}
+                /><span className={classes.action_btn}>|</span>
+                <Icon
+                  onClick={() => onTodoDeleteClicked(currentTodo._id)}
+                  iconType={IconOptions.Delete}
+                  className={classes.delete_btn + " " + classes.action_btn}
+                />
+              </div>
             </div>
           </li>
         );

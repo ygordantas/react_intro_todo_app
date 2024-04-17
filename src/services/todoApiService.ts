@@ -6,7 +6,7 @@ import User from "../models/user";
 import Todo from "../models/todo";
 
 const httpClient = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: "http://localhost:4000",
 });
 
 const basePaths = {
@@ -35,6 +35,10 @@ const todoApiService = {
   },
   createTodo: async (todo: Todo): Promise<Todo> => {
     const response = await httpClient.post(basePaths.todos, todo);
+    return response.data;
+  },
+  updateTodo: async (todo: Todo): Promise<Todo> => {
+    const response = await httpClient.put(basePaths.todos, todo);
     return response.data;
   },
   deleteTodo: async (userId: string, todoId: string): Promise<void> => {

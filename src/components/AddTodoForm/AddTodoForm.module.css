@@ -12,7 +12,7 @@
   align-items: center;
 }
 
-.submit_btn {
+.btn {
   width: 50%;
   margin-top: 60px;
 }
@@ -30,4 +30,16 @@
 .error_message {
   color: red;
   font-size: 11px;
+}
+
+.action_buttons_container {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+}
+
+.cancel_update_btn {
+  background-color: #fff;
+  color: red;
+  border: 2px solid red;
 }

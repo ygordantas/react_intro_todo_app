@@ -11,7 +11,6 @@
   width: 100%;
   border-radius: 4px;
   margin-bottom: 10px;
-  cursor: pointer;
   display: flex;
   flex-direction: row;
   padding: 5px 10px;
@@ -20,17 +19,8 @@
   background-color: #d4e0dc;
 }
 
-.delete_btn {
-  display: none;
-  color: red;
-}
-
 .item_container:hover {
   background-color: antiquewhite;
-}
-
-.item_container:hover .delete_btn {
-  display: flex;
 }
 
 .todo_details_container {
@@ -55,4 +45,26 @@
   font-size: 16px;
   display: block;
   height: 300px;
+}
+.action_btns_container {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+}
+.action_btn {
+  display: none;
+}
+
+.delete_btn {
+  color: red;
+  cursor: pointer;
+}
+
+.edit_btn {
+  cursor: pointer;
+  color: #0790ad;
+}
+
+.item_container:hover .action_btn {
+  display: flex;
 }
