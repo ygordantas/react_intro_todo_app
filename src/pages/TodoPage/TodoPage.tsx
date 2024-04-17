@@ -1,24 +1,25 @@
 import { useEffect, useState } from "react";
 
+import { Navigate, useLocation } from "react-router-dom";
 import AddTodoForm from "../../components/AddTodoForm/AddTodoForm";
+import Card from "../../components/Card/Card";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import TodoList from "../../components/TodoList/TodoList";
 import Todo from "../../models/todo";
-import classes from "./TodoPage.module.css";
-import Card from "../../components/Card/Card";
-import { Navigate, useLocation } from "react-router-dom";
-import todoApiService from "../../services/todoApiService";
 import TodoCategory from "../../models/todoCategory";
-import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import TodoPriority from "../../models/todoPriority";
+import todoApiService from "../../services/todoApiService";
+import classes from "./TodoPage.module.css";
 
 const TodoPage = (): JSX.Element => {
   const { state } = useLocation();
 
   const [categories, setCategories] = useState<TodoCategory[]>([]);
   const [priorities, setPriorities] = useState<TodoPriority[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingPage, setIsLoadingPage] = useState(true);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingTodoList, setIsLoadingTodoList] = useState(false);
 
   //--- Side Effects ---//
   useEffect(() => {
@@ -32,7 +33,7 @@ const TodoPage = (): JSX.Element => {
       } catch (error) {
         alert("Something went trying to retrieve data from server");
       } finally {
-        !state.userId && setIsLoading(false);
+        !state.userId && setIsLoadingPage(false);
       }
     };
 
@@ -45,13 +46,13 @@ const TodoPage = (): JSX.Element => {
       if (categories.length === 0 || priorities.length === 0) return;
 
       try {
-        !isLoading && setIsLoading(true);
+        !isLoadingPage && setIsLoadingPage(true);
         const userTodos = await todoApiService.getUserTodos(state.userId);
         setTodos(userTodos);
       } catch (error) {
         alert(error);
       } finally {
-        setIsLoading(false);
+        setIsLoadingPage(false);
       }
     };
 
@@ -72,24 +73,29 @@ const TodoPage = (): JSX.Element => {
     }
   };
 
-  const onTodoDeleteClickHandler = async (index: number) => {
+  const onTodoDeleteClickHandler = async (todoId: string) => {
+    console.log(todos);
+    console.log(todoId);
+
     try {
-      setIsLoading(true);
-      await todoApiService.deleteTodo(state.userId, todos[index]._id);
+      setIsLoadingTodoList(true);
+      await todoApiService.deleteTodo(state.userId, todoId);
       setTodos((currentTodos) => {
         const copy = [...currentTodos];
+        const index = copy.findIndex((x) => x._id === todoId);
+
         copy.splice(index, 1);
         return copy;
       });
     } catch (error) {
       alert(error);
     } finally {
-      setIsLoading(false);
+      setIsLoadingTodoList(false);
     }
   };
 
-  return isLoading ? (
-    <LoadingSpinner />
+  return isLoadingPage ? (
+    <LoadingSpinner type="page" />
   ) : state?.username ? (
     <div className={classes.container}>
       <div className={classes.todo_form_container}>
@@ -105,12 +111,16 @@ const TodoPage = (): JSX.Element => {
       </div>
 
       <div className={classes.listContainer}>
-        <TodoList
-          categoryOptions={categories}
-          priorityOptions={priorities}
-          onTodoDeleteClicked={onTodoDeleteClickHandler}
-          todos={todos}
-        />
+        {isLoadingTodoList ? (
+          <LoadingSpinner type="component" />
+        ) : (
+          <TodoList
+            categoryOptions={categories}
+            priorityOptions={priorities}
+            onTodoDeleteClicked={onTodoDeleteClickHandler}
+            todos={todos}
+          />
+        )}
       </div>
     </div>
   ) : (

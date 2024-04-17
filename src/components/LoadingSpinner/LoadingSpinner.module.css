@@ -13,6 +13,12 @@
   transform: translate(-50%, -50%);
   z-index: 50;
 }
+.component_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
 .loader {
   width: 148px;
   height: 148px;
@@ -20,9 +26,14 @@
   display: inline-block;
   position: relative;
   border: 3px solid;
-  border-color: #fff #fff transparent transparent;
   box-sizing: border-box;
   animation: rotation 1s linear infinite;
+}
+.container .loader {
+  border-color: #fff #fff transparent transparent;
+}
+.component_container .loader {
+  border-color: cadetblue cadetblue transparent transparent;
 }
 .loader::after,
 .loader::before {
