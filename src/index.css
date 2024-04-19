@@ -22,3 +22,17 @@ body {
   visibility: hidden;
   display: block;
 }
+
+input, textarea {
+  border-radius: 20px;
+  border: 1px solid #c0c0c0;
+  outline: 0 !important;
+  box-sizing: border-box;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border: 1px solid #0790ad;
+  box-shadow: 0 0 5px #0790ad;
+}

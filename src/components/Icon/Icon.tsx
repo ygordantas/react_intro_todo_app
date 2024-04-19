@@ -1,13 +1,22 @@
 interface IconProps {
   iconType: string;
+  tooltip?: string;
   className?: string;
   style?: React.CSSProperties;
   id?: string;
   onClick?: (event: unknown) => void;
 }
 
-const Icon = ({ className, style, id, iconType, onClick }: IconProps) => (
+const Icon = ({
+  className,
+  style,
+  id,
+  iconType,
+  tooltip,
+  onClick,
+}: IconProps) => (
   <span
+    title={tooltip ?? ""}
     onClick={onClick}
     id={id}
     style={style}

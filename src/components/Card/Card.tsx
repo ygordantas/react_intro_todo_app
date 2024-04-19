@@ -4,7 +4,7 @@ interface CardProps {
   title?: string;
   subTitle?: string;
   children?: JSX.Element;
-  footerText?: string;
+  footer?: string | JSX.Element;
   makeFooterTextBold?: boolean;
 }
 
@@ -12,7 +12,7 @@ const Card = ({
   title,
   subTitle,
   children,
-  footerText,
+  footer,
   makeFooterTextBold,
 }: CardProps): JSX.Element => (
   <div className={classes.card}>
@@ -22,12 +22,12 @@ const Card = ({
     </div>
     <div className={classes.content}>{children}</div>
     <div className={classes.footer}>
-      {footerText && (
+      {footer && (
         <p
           style={{ fontWeight: makeFooterTextBold ? "bold" : "inherit" }}
           className={classes.footerText}
         >
-          {footerText}
+          {footer}
         </p>
       )}
     </div>

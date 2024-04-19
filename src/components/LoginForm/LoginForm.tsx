@@ -1,17 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import TextInput from "../TextInput/TextInput";
 import Button from "../Button/Button";
-import classes from "./UserForm.module.css";
+import classes from "./LoginForm.module.css";
 import todoApiService from "../../services/todoApiService";
+import TextInput from "../TextInput/TextInput";
 
-const UserForm = () => {
+const LoginForm = () => {
   //--- Custom Hooks ---//
   const navigate = useNavigate();
 
   //--- States ---//
   const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   //--- Methods ---//
@@ -36,15 +37,23 @@ const UserForm = () => {
       <TextInput
         value={username}
         onChange={(e) => setUsername(e.target.value)}
-        placeholder="username"
+        placeholder="Username"
         required
       />
 
+      <TextInput
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
+        required
+        type="password"
+      />
+
       <Button disabled={isSubmitting} type="submit">
-        {isSubmitting ? "Submitting..." : "Next"}
+        {isSubmitting ? "Submitting..." : "Login"}
       </Button>
     </form>
   );
 };
 
-export default UserForm;
+export default LoginForm;

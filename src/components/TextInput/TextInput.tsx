@@ -7,6 +7,9 @@ interface TextInputProps {
   value?: string;
   disabled?: boolean;
   required?: boolean;
+  inputRef?: React.RefObject<HTMLInputElement>;
+  maxLength?: number;
+  minLength?: number;
 }
 
 const TextInput = ({
@@ -15,11 +18,17 @@ const TextInput = ({
   disabled,
   onChange,
   required,
+  inputRef,
   type = "text",
+  maxLength,
+  minLength,
 }: TextInputProps): JSX.Element => {
   return (
     <div className={classes.input_container}>
       <input
+        maxLength={maxLength}
+        minLength={minLength}
+        ref={inputRef}
         onChange={onChange}
         type={type}
         placeholder={placeholder}

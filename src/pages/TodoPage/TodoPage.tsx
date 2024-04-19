@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import AddTodoForm from "../../components/AddTodoForm/AddTodoForm";
+import { useLocation, useNavigate } from "react-router-dom";
 import Card from "../../components/Card/Card";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+import TodoForm from "../../components/TodoForm/TodoForm";
 import TodoList from "../../components/TodoList/TodoList";
 import Todo from "../../models/todo";
 import TodoCategory from "../../models/todoCategory";
@@ -15,18 +15,25 @@ const TodoPage = (): JSX.Element => {
   const { state } = useLocation();
   const navigate = useNavigate();
 
+  //--- Page State ---//
+  const [isLoadingPage, setIsLoadingPage] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  //--- Page Data ---//
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [categories, setCategories] = useState<TodoCategory[]>([]);
   const [priorities, setPriorities] = useState<TodoPriority[]>([]);
-  const [isLoadingPage, setIsLoadingPage] = useState(true);
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoadingTodoList, setIsLoadingTodoList] = useState(false);
+  const [todoBeingDeleted, setTodoBeingDeleted] = useState<string | undefined>(
+    undefined
+  );
   const [selectedTodoToUpdate, setSelectedTodoToUpdate] = useState<
     Todo | undefined
   >(undefined);
 
   //--- Side Effects ---//
   useEffect(() => {
+    if (!state || !state.userId) return navigate("/", { state: null });
+
     const getOptions = async () => {
       try {
         const categoriesOptions = await todoApiService.getTodoCategories();
@@ -62,14 +69,31 @@ const TodoPage = (): JSX.Element => {
 
     getUserTodos();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.userId, categories, priorities]);
+  }, [state, categories, priorities]);
 
   //--- Methods ---//
+  const createTodoHandler = async (todo: Todo) => {
+    const newTodo = await todoApiService.createTodo(todo);
+    setTodos((currentTodos) => [...currentTodos, newTodo]);
+  };
+
+  const updateTodoHandler = async (todo: Todo) => {
+    const updatedTodo = await todoApiService.updateTodo(todo);
+    setTodos((currentTodos) => {
+      const copy = [...currentTodos];
+      const index = copy.findIndex((x) => x._id === updatedTodo._id);
+      copy[index] = updatedTodo;
+      return copy;
+    });
+    setSelectedTodoToUpdate(undefined);
+  };
+
   const onTodoFormSubmit = async (todo: Todo) => {
     try {
       setIsSubmitting(true);
-      const savedTodo = selectedTodoToUpdate ? await todoApiService.updateTodo(todo) : await todoApiService.createTodo(todo);
-      setTodos((currentTodos) => [...currentTodos, savedTodo]);
+      selectedTodoToUpdate
+        ? await updateTodoHandler(todo)
+        : await createTodoHandler(todo);
     } catch (error) {
       alert(error);
     } finally {
@@ -79,7 +103,7 @@ const TodoPage = (): JSX.Element => {
 
   const onTodoDeleteClickHandler = async (todoId: string) => {
     try {
-      setIsLoadingTodoList(true);
+      setTodoBeingDeleted(todoId);
       await todoApiService.deleteTodo(state.userId, todoId);
       setTodos((currentTodos) => {
         const copy = [...currentTodos];
@@ -91,7 +115,7 @@ const TodoPage = (): JSX.Element => {
     } catch (error) {
       alert(error);
     } finally {
-      setIsLoadingTodoList(false);
+      setTodoBeingDeleted(undefined);
     }
   };
 
@@ -105,7 +129,7 @@ const TodoPage = (): JSX.Element => {
 
   return isLoadingPage ? (
     <LoadingSpinner type="page" />
-  ) : state?.username ? (
+  ) : (
     <div className={classes.container}>
       <div className={classes.todo_form_container}>
         <button
@@ -119,7 +143,7 @@ const TodoPage = (): JSX.Element => {
           Logout <span className="material-symbols-outlined">logout</span>
         </button>
         <Card title={`Hello, ${state.username}`}>
-          <AddTodoForm
+          <TodoForm
             onCancelUpdate={onCancelUpdateClickHandler}
             todoToUpdate={selectedTodoToUpdate}
             userId={state.userId}
@@ -132,21 +156,16 @@ const TodoPage = (): JSX.Element => {
       </div>
 
       <div className={classes.listContainer}>
-        {isLoadingTodoList ? (
-          <LoadingSpinner type="component" />
-        ) : (
-          <TodoList
-            onTodoClicked={onTodoClickHandler}
-            categoryOptions={categories}
-            priorityOptions={priorities}
-            onTodoDeleteClicked={onTodoDeleteClickHandler}
-            todos={todos}
-          />
-        )}
+        <TodoList
+          onTodoClicked={onTodoClickHandler}
+          categoryOptions={categories}
+          priorityOptions={priorities}
+          onTodoDeleteClicked={onTodoDeleteClickHandler}
+          todos={todos}
+          todoIdBeingDeleted={todoBeingDeleted}
+        />
       </div>
     </div>
-  ) : (
-    <Navigate to={"/"} />
   );
 };
 

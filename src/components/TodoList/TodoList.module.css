@@ -15,7 +15,7 @@
   flex-direction: row;
   padding: 5px 10px;
   justify-content: space-between;
-  height: 100px;
+  height: 150px;
   background-color: #d4e0dc;
 }
 
@@ -52,7 +52,8 @@
   gap: 15px;
 }
 .action_btn {
-  display: none;
+  display: flex;
+  visibility: hidden;
 }
 
 .delete_btn {
@@ -66,5 +67,20 @@
 }
 
 .item_container:hover .action_btn {
+  visibility: visible;
+}
+
+.todo_details_icons {
   display: flex;
+  flex-direction: row;
+  gap: 15px;
+}
+
+.disabled_item_container {
+  opacity: 0.5;
+  cursor: progress;
+}
+
+.disabled_item_container:hover {
+  background-color: none !important;
 }

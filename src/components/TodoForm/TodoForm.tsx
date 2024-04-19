@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import Todo from "../../models/todo";
 import TodoCategory from "../../models/todoCategory";
 import TodoPriority from "../../models/todoPriority";
 import Button from "../Button/Button";
 import SelectDropdown from "../SelectDropdown/SelectDropdown";
-import TextInput from "../TextInput/TextInput";
-import classes from "./AddTodoForm.module.css";
+import Textarea from "../Textarea/Textarea";
+import classes from "./TodoForm.module.css";
 
 const PLACEHOLDER_CATEGORY_SELECT_TEXT = "Choose a category:";
 
@@ -20,7 +20,7 @@ const createDefaultTodo = (
   priorityId: todoPriorities.find((x) => x.name === "Medium")!._id,
 });
 
-interface AddTodoFormProps {
+interface TodoFormProps {
   onSubmit: (newTodo: Todo) => void;
   onCancelUpdate: () => void;
   todoCategories: TodoCategory[];
@@ -30,7 +30,7 @@ interface AddTodoFormProps {
   todoToUpdate?: Todo;
 }
 
-const AddTodoForm = ({
+const TodoForm = ({
   onSubmit,
   onCancelUpdate,
   todoCategories,
@@ -38,7 +38,9 @@ const AddTodoForm = ({
   isSubmitting,
   userId,
   todoToUpdate,
-}: AddTodoFormProps): JSX.Element => {
+}: TodoFormProps): JSX.Element => {
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
   //--- Form State ---//
   const [isFormValid, setIsFormValid] = useState<boolean>(true);
 
@@ -55,9 +57,15 @@ const AddTodoForm = ({
     }
   }, [todoPriorities, todoToUpdate, userId]);
 
+  useEffect(() => {
+    if (todoToUpdate) {
+      inputRef.current?.focus();
+    }
+  }, [todoToUpdate]);
+
   //--- Methods ---//
   const onTodoTextChangeHandler = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLTextAreaElement>
   ): void => {
     setTodo((currentTodo) => ({
       ...currentTodo,
@@ -127,13 +135,14 @@ const AddTodoForm = ({
   //--- JSX ---//
   return (
     <form className={classes.todo_form} onSubmit={onSubmitHandler}>
-      <TextInput
+      <Textarea
+        maxLength={300}
+        ref={inputRef}
         placeholder="Enter your todo here..."
         value={todo.text}
         onChange={onTodoTextChangeHandler}
         required={true}
       />
-
       <p
         className={
           todo.text === "" && !isFormValid ? classes.error_message : "hide"
@@ -181,4 +190,4 @@ const AddTodoForm = ({
   );
 };
 
-export default AddTodoForm;
+export default TodoForm;
