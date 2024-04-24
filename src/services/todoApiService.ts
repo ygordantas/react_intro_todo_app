@@ -29,8 +29,18 @@ const todoApiService = {
     const response = await httpClient.get(basePaths.todos + "/user/" + userId);
     return response.data;
   },
-  createNewUser: async (username: string): Promise<User> => {
-    const response = await httpClient.post(basePaths.users, { username });
+  signUp: async (username: string, password: string): Promise<User> => {
+    const response = await httpClient.post(basePaths.users + "/signup", {
+      username,
+      password,
+    });
+    return response.data;
+  },
+  login: async (username: string, password: string): Promise<User> => {
+    const response = await httpClient.post(basePaths.users + "/login", {
+      username,
+      password,
+    });
     return response.data;
   },
   createTodo: async (todo: Todo): Promise<Todo> => {

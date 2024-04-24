@@ -1,9 +1,13 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import todoApiService from "../../services/todoApiService";
 import Button from "../Button/Button";
 import TextInput from "../TextInput/TextInput";
 import classes from "./SignUpForm.module.css";
 
 const SignUpForm = () => {
+  const navigate = useNavigate();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -22,10 +26,12 @@ const SignUpForm = () => {
     setIsSubmitting(true);
 
     try {
-      console.log("Sign Up form submitted");
+      const response = await todoApiService.signUp(username, password);
+      navigate("/todos", {
+        state: { username: response.username, userId: response._id },
+      });
     } catch (error) {
       alert(error);
-    } finally {
       setIsSubmitting(false);
     }
   };

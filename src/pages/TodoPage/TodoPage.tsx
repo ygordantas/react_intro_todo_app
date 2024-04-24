@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Card from "../../components/Card/Card";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import TodoForm from "../../components/TodoForm/TodoForm";
 import TodoList from "../../components/TodoList/TodoList";
+import { useUserContext } from "../../contexts/userContext";
 import Todo from "../../models/todo";
 import TodoCategory from "../../models/todoCategory";
 import TodoPriority from "../../models/todoPriority";
@@ -12,8 +13,8 @@ import todoApiService from "../../services/todoApiService";
 import classes from "./TodoPage.module.css";
 
 const TodoPage = (): JSX.Element => {
-  const { state } = useLocation();
   const navigate = useNavigate();
+  const { user, setUser } = useUserContext();
 
   //--- Page State ---//
   const [isLoadingPage, setIsLoadingPage] = useState(true);
@@ -32,7 +33,7 @@ const TodoPage = (): JSX.Element => {
 
   //--- Side Effects ---//
   useEffect(() => {
-    if (!state || !state.userId) return navigate("/", { state: null });
+    if (!user) return navigate("/");
 
     const getOptions = async () => {
       try {
@@ -44,7 +45,7 @@ const TodoPage = (): JSX.Element => {
       } catch (error) {
         alert("Something went trying to retrieve data from server");
       } finally {
-        !state.userId && setIsLoadingPage(false);
+        !user && setIsLoadingPage(false);
       }
     };
 
@@ -58,7 +59,7 @@ const TodoPage = (): JSX.Element => {
 
       try {
         !isLoadingPage && setIsLoadingPage(true);
-        const userTodos = await todoApiService.getUserTodos(state.userId);
+        const userTodos = await todoApiService.getUserTodos(user!._id);
         setTodos(userTodos);
       } catch (error) {
         alert(error);
@@ -69,7 +70,7 @@ const TodoPage = (): JSX.Element => {
 
     getUserTodos();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, categories, priorities]);
+  }, [user, categories, priorities]);
 
   //--- Methods ---//
   const createTodoHandler = async (todo: Todo) => {
@@ -104,7 +105,7 @@ const TodoPage = (): JSX.Element => {
   const onTodoDeleteClickHandler = async (todoId: string) => {
     try {
       setTodoBeingDeleted(todoId);
-      await todoApiService.deleteTodo(state.userId, todoId);
+      await todoApiService.deleteTodo(user!._id, todoId);
       setTodos((currentTodos) => {
         const copy = [...currentTodos];
         const index = copy.findIndex((x) => x._id === todoId);
@@ -127,26 +128,24 @@ const TodoPage = (): JSX.Element => {
     setSelectedTodoToUpdate(undefined);
   };
 
+  const onLogoutClickHandler = () => {
+    setUser(null);
+    navigate("/");
+  };
+
   return isLoadingPage ? (
     <LoadingSpinner type="page" />
   ) : (
     <div className={classes.container}>
       <div className={classes.todo_form_container}>
-        <button
-          onClick={() =>
-            navigate("/", {
-              state: null,
-            })
-          }
-          className={classes.logout_btn}
-        >
+        <button onClick={onLogoutClickHandler} className={classes.logout_btn}>
           Logout <span className="material-symbols-outlined">logout</span>
         </button>
-        <Card title={`Hello, ${state.username}`}>
+        <Card title={`Hello, ${user!.username}`}>
           <TodoForm
             onCancelUpdate={onCancelUpdateClickHandler}
             todoToUpdate={selectedTodoToUpdate}
-            userId={state.userId}
+            userId={user!._id}
             todoPriorities={priorities}
             todoCategories={categories}
             isSubmitting={isSubmitting}

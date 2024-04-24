@@ -39,7 +39,7 @@ const TodoForm = ({
   userId,
   todoToUpdate,
 }: TodoFormProps): JSX.Element => {
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   //--- Form State ---//
   const [isFormValid, setIsFormValid] = useState<boolean>(true);
@@ -59,7 +59,7 @@ const TodoForm = ({
 
   useEffect(() => {
     if (todoToUpdate) {
-      inputRef.current?.focus();
+      textAreaRef.current?.focus();
     }
   }, [todoToUpdate]);
 
@@ -137,7 +137,7 @@ const TodoForm = ({
     <form className={classes.todo_form} onSubmit={onSubmitHandler}>
       <Textarea
         maxLength={300}
-        ref={inputRef}
+        ref={textAreaRef}
         placeholder="Enter your todo here..."
         value={todo.text}
         onChange={onTodoTextChangeHandler}

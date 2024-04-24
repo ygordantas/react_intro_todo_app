@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-import Button from "../Button/Button";
-import classes from "./LoginForm.module.css";
+import { useUserContext } from "../../contexts/userContext";
 import todoApiService from "../../services/todoApiService";
+import Button from "../Button/Button";
 import TextInput from "../TextInput/TextInput";
+import classes from "./LoginForm.module.css";
 
 const LoginForm = () => {
   //--- Custom Hooks ---//
   const navigate = useNavigate();
+  const { setUser } = useUserContext();
 
   //--- States ---//
   const [username, setUsername] = useState("");
@@ -21,10 +22,9 @@ const LoginForm = () => {
     setIsSubmitting(true);
 
     try {
-      const user = await todoApiService.createNewUser(username);
-      navigate("/todos", {
-        state: { username: user.username, userId: user._id },
-      });
+      const user = await todoApiService.login(username, password);
+      setUser(user);
+      navigate("/todos");
     } catch (error) {
       alert(error);
     }
